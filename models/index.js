@@ -1,5 +1,4 @@
 const {PrismaClient}=require('@prisma/client')
-
 const prisma=new PrismaClient()
 
 
@@ -18,5 +17,15 @@ async function createUser(username,email,password) {
         throw new Error('error creating user');
     }
 }
+async function getUserByEmail(email) {
+    try {
+        const user=await prisma.user.findUnique({
+            where:{email:email}
+        });
+        return user
+    } catch (err) {
+        console.error("error finding user by email",err.message)
+    }
+}
 
-module.exports={createUser};
+module.exports={createUser,getUserByEmail};
