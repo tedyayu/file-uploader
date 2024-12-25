@@ -4,6 +4,7 @@ const userController=require('../controller/userController');
 
 router.get('/login',userController.getLogin);
 router.get('/signup',userController.getSignUp);
+router.post('/signup',userController.registerUser)
 
 
 module.exports=router;
