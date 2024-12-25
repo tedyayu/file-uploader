@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Folder and File Upload</title>
+</head>
+<body>
+  <h1>Create Folder and Upload Files</h1>
+
+  <!-- Form to Create a Folder -->
+  <form action="/create-folder" method="POST">
+    <label for="folderName">Folder Name:</label>
+    <input type="text" id="folderName" name="folderName" required>
+    <button type="submit">Create Folder</button>
+  </form>
+
+  <hr>
+
+  <!-- Form to Upload File -->
+  <form action="/upload-file" method="POST" enctype="multipart/form-data">
+    <label for="folder">Select Folder:</label>
+    <select id="folder" name="folder" required>
+      <% folders.forEach(folder => { %>
+        <option value="<%= folder %>"><%= folder %></option>
+      <% }); %>
+    </select>
+
+    <label for="file">Choose File:</label>
+    <input type="file" id="file" name="file" required>
+    <button type="submit">Upload File</button>
+  </form>
+
+  <hr>
+
+  <!-- Display Existing Folders and Files -->
+  <h2>Folders and Files</h2>
+  <ul>
+    <% folders.forEach(folder => { %>
+      <li>
+        <strong><%= folder %></strong>
+        <ul>
+          <% files[folder]?.forEach(file => { %>
+            <li><%= file %></li>
+          <% }); %>
+        </ul>
+      </li>
+    <% }); %>
+  </ul>
+</body>
+</html>
