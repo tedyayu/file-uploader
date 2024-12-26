@@ -1,6 +1,8 @@
 const model=require('../models/index');
 const{body,validationResult}=require('express-validator')
 const bcrypt=require('bcrypt')
+const passport=require('passport')
+const LocalStrategy=require('passport-local').Strategy;
 
 
 const getSignUp=(req,res)=>{
@@ -70,5 +72,49 @@ const getLogin= (req,res)=>{
     res.render('login')
 }
 
+passport.use(
+    new LocalStrategy(
+        async (username,password,done)=>{
+            console.log("LocalStrategy called with:", { username, password });
+            try {
+                const user=await model.getUserByUsername(username);
+                if(!user){
+                    console.log("no user is found in this username")
+                    return done(null,false,{message:"Incorrect username"})
+                }
+                const matchedPassword=await bcrypt.compare(password,user.password);
 
-module.exports={getLogin,getSignUp,registerUser};
+                if(!matchedPassword){
+                    console.log("Password does not match");
+                    return done(null,false,{message:"Incorrect password"})
+                }
+
+                return done(null,user);
+            } catch (err) {
+                return done(err);
+            }
+        }
+    )
+)
+passport.serializeUser((user,done)=>{
+    done(null,user.id)
+});
+passport.deserializeUser(async(id,done)=>{
+    try {
+        const user=await model.getUserById(id)
+        done(null,user)
+    } catch (err) {
+        done(err)
+    }
+})
+const loginUser=(req,res)=>{
+    passport.authenticate("local",{
+        successRedirect:"/index",
+        failureRedirect:"/signup"
+    })(req,res)
+}
+
+
+
+
+module.exports={getLogin,getSignUp,registerUser,loginUser};

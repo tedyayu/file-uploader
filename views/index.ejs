@@ -20,7 +20,7 @@
   <!-- Form to Upload File -->
   <form action="/upload-file" method="POST" enctype="multipart/form-data">
     <label for="folder">Select Folder:</label>
-    <select id="folder" name="folder" required>
+    <select id="folder" name="folderName" required>
       <% folders.forEach(folder => { %>
         <option value="<%= folder %>"><%= folder %></option>
       <% }); %>

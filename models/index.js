@@ -28,4 +28,26 @@ async function getUserByEmail(email) {
     }
 }
 
-module.exports={createUser,getUserByEmail};
+async function getUserByUsername(username) {
+    try {
+        const user=await prisma.user.findFirst({
+            where:{name:username}
+        });
+        return user;
+    } catch (err) {
+        console.error("error finding user by username",err.message)
+    }
+}
+
+async function getUserById(id) {
+    try {
+        const user=await prisma.user.findFirst({
+            where:{id:id}
+        });
+        return user;
+    } catch (err) {
+        console.error("error finding user by id",err.message)
+    }
+}
+
+module.exports={createUser,getUserByEmail,getUserByUsername,getUserById};
