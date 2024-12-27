@@ -9,13 +9,31 @@ datasource db {
 
 model User {
   id       Int    @id @default(autoincrement())
-  name     String 
+  name     String
   email    String @unique
-  password String 
+  password String
 }
+
 model Session {
   id        String   @id
   sid       String   @unique
-  data      String   @db.Text
-  expiresAt   DateTime
+  data      String
+  expiresAt DateTime
+}
+
+model Folder {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  files     File[]
+}
+
+model File {
+  id         Int      @id @default(autoincrement())
+  name       String
+  size       Int
+  uploadTime DateTime @default(now())
+  folderId   Int
+  fileUrl    String
+  folder     Folder   @relation(fields: [folderId], references: [id])
 }

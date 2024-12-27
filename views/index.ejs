@@ -22,7 +22,7 @@
     <label for="folder">Select Folder:</label>
     <select id="folder" name="folderName" required>
       <% folders.forEach(folder => { %>
-        <option value="<%= folder %>"><%= folder %></option>
+        <option value="<%= folder.name %>"><%= folder.name %></option>
       <% }); %>
     </select>
 
@@ -38,10 +38,17 @@
   <ul>
     <% folders.forEach(folder => { %>
       <li>
-        <strong><%= folder %></strong>
+        <strong><%= folder.name %></strong>
+        <form action="/delete-folder/<%= folder.id %>" method="POST" style="display:inline;">
+          <button type="submit">Delete Folder</button>
+        </form>
         <ul>
-          <% files[folder]?.forEach(file => { %>
-            <li><%= file %></li>
+          <% files.filter(file => file.folderId === folder.id).forEach(file => { %>
+            <li>
+              <a href="/file-details/<%= file.id %>"><%= file.name %></a>
+              (Size: <%= file.size %> bytes, Uploaded: <%= new Date(file.uploadTime).toLocaleString() %>)
+              <a href="<%= file.fileUrl %>" download>Download</a>
+            </li>
           <% }); %>
         </ul>
       </li>
