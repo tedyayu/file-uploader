@@ -86,16 +86,18 @@ async function deleteFolder(req,res) {
 const uploadFile = [
     upload.single('file'),
     async (req, res) => {
-
+        const folderName=req.body.folderName
+        const folder=await model.getFolderByFolderName(folderName)
+        const folderId=folder.id;
         try {
             const fileUrl=await uploadFileToSupabase(req.file);
-            await model.uploadFileToDatabase(req,fileUrl)
+            await model.uploadFileToDatabase(req,fileUrl,folderId)
             res.redirect('/index');
         } catch (err) {
             res.status(500).send('Error uploading file');
             console.error('Error uploading file',err.stack)
         }
-      
+    
     },
   ];
 

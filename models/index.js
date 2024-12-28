@@ -82,15 +82,16 @@ async function createFolder(folderName) {
     
 }
 
-async function uploadFileToDatabase(req,fileUrl) {
+async function uploadFileToDatabase(req,fileUrl,folderId) {
     try {
+        //console.log('Debugging req.file:', req.file);
         await prisma.file.create({
             data:{
-                name:'myfile.txt',//req.file.orginalname,
-                size:6666,//req.file.size,
+                name:req.file.originalname,
+                size:req.file.size,
                 uploadTime:new Date(),
-                folderId:parseInt(1),//req.body.folderId,
-                fileUrl:'https://example.com/testFile.txt'//fileUrl,
+                folderId:parseInt(folderId),
+                fileUrl:fileUrl,
                 
             }
         })
@@ -128,6 +129,20 @@ async function testCreate() {
     
 }
 
+async function getFolderByFolderName(folderName) {
+    try {
+        const folder=await prisma.folder.findFirst({
+            where:{
+                name:folderName
+            }
+        });
+        return folder;
+    } catch (err) {
+        console.error('error finding folder by name',err.message);
+    }
+    
+}
+
 module.exports={createUser,
               getUserByEmail,
               getUserByUsername,
@@ -136,4 +151,5 @@ module.exports={createUser,
               ,createFolder,
               uploadFileToDatabase
               ,getFileById,
-              deleteFolder,testCreate};
+              deleteFolder,testCreate,
+              getFolderByFolderName};
