@@ -71,15 +71,30 @@ async function createFolder(req, res) {
 }
 
 async function deleteFolder(req,res) {
-    const {folderId}=req.params.id;
+    const folderId=parseInt(req.params.id);
     try {
-        const folder=model.deleteFolder(folderId)
+        const folder=await model.getFolderById(folderId)
+        if (!folder) {
+            return res.status(404).send('Folder not found');
+        }
+        await model.deleteFileByFolderId(folderId)
+        console.log(`All files in folder ID ${folderId} deleted successfully.`);
         const folderPath=path.join(baseDir,folder.name);
-        fs.rmdirSync(folderPath,{recursive:true});
-        res.redirect('/')
+        fs.rm(folderPath,{recursive:true},(err) => {
+            if (err) {
+                console.error('Error deleting folder from filesystem:', err.message);
+                throw new Error('Error deleting folder from filesystem');
+            }
+        });
+        
+        await model.deleteFolder(folderId)
+        
+        res.redirect('/index')
     } catch (err) {
         res.status(500).send('Error deleting folder');
-        console.log('Error deleting folder');
+        console.error('Error deleting the folder',err.message);
+        throw new Error("error deleting folder",err.message);
+        
     }
 }
 
@@ -110,13 +125,14 @@ async function uploadFileToSupabase(file) {
 
     const {data,error}=await supabase.storage
         .from('files')
-        .upload(`public/${file.filename}`,file.path,{
+        .upload(`public/${file.filename}`,fs.readFileSync(file.path) ,{
             cacheControl: '3600',
             upsert: false
         })
 
     if (error){
-        throw new Error(error.message);
+        console.error('Supabase upload error:', error);
+        throw new Error("Error uploading to Supabase:",error.stack);
     }
     const fileUrl=`${SUPABASE_URL}/storage/v1/object/public/files/public/${file.filename}`
     return fileUrl;

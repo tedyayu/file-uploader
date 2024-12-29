@@ -12,7 +12,7 @@ router.get('/index',fileFolderCreate.getHome);
 router.post('/create-folder',fileFolderCreate.createFolder);
 router.post('/upload-file',fileFolderCreate.uploadFile);
 router.post('/delete-folder/:id',fileFolderCreate.deleteFolder);
-router.get('/text',testController.testCreate);
+router.post('/delete-folder/:folder.id',fileFolderCreate.deleteFolder)
 
 
 module.exports=router;

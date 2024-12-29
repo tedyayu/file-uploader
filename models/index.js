@@ -65,9 +65,13 @@ async function getFiles() {
     return files;
 }
 async function deleteFolder(folderId) {
+    console.log("Deleting folder with ID:", folderId); // Debugging
+    if (!folderId) {
+        throw new Error("Folder ID is undefined");
+    }
     await prisma.folder.delete({
         where:{
-            id:parseInt(folderId)
+            id:folderId
         }
     })
 }
@@ -112,22 +116,7 @@ async function getFileById(fileId) {
     return file;
 }
 
-async function testCreate() {
-    try {
-        await prisma.file.create({
-            data:{
-                name:'testFile.txt',
-                size:1234,
-                uploadTime: new Date(),
-                folderId:1,
-                fileUrl:'https://example.com/testFile.txt'
-            }
-        })
-    } catch (err) {
-        console.error('error inserting data',err.message)
-    }
-    
-}
+
 
 async function getFolderByFolderName(folderName) {
     try {
@@ -143,6 +132,22 @@ async function getFolderByFolderName(folderName) {
     
 }
 
+async function getFolderById(folderId) {
+    const folder=await prisma.folder.findFirst({
+        where:{
+            id:folderId
+        }
+    });
+    return folder
+}
+
+async function deleteFileByFolderId(folderId) {
+    await prisma.file.deleteMany({
+        where:{
+            folderId:folderId
+        }
+    })
+}
 module.exports={createUser,
               getUserByEmail,
               getUserByUsername,
@@ -151,5 +156,7 @@ module.exports={createUser,
               ,createFolder,
               uploadFileToDatabase
               ,getFileById,
-              deleteFolder,testCreate,
-              getFolderByFolderName};
+              deleteFolder,
+              getFolderByFolderName,
+              getFolderById,
+              deleteFileByFolderId};
